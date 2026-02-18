@@ -1,0 +1,13 @@
+agent:
+  name: claude-code
+  timeout: 1800
+  options:
+    # Model alias or full name. Leave empty for default.
+    model: ""
+    # Max agentic turns per instance
+    max_turns: 30
+    # Max budget in USD per instance (null = unlimited)
+    max_budget_usd: null
+    # bypassPermissions skips all permission prompts (needed for unattended runs)
+    permission_mode: bypassPermissions
+  env: {}

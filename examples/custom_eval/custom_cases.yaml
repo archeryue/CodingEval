@@ -1,0 +1,53 @@
+dataset_name: custom-example
+
+instances:
+  - instance_id: example-001
+    repo: example/repo
+    base_commit: abc123
+    problem_statement: |
+      Fix the bug where the login function doesn't handle empty passwords.
+      The function should return an error when an empty string is passed.
+    hints_text: Check the validate_password function in auth.py
+    test_patch: |
+      diff --git a/tests/test_auth.py b/tests/test_auth.py
+      --- a/tests/test_auth.py
+      +++ b/tests/test_auth.py
+      @@ -10,6 +10,10 @@
+       class TestAuth:
+           def test_login_valid(self):
+               assert login("user", "pass123") is True
+      +
+      +    def test_login_empty_password(self):
+      +        with pytest.raises(ValueError):
+      +            login("user", "")
+    gold_patch: |
+      diff --git a/auth.py b/auth.py
+      --- a/auth.py
+      +++ b/auth.py
+      @@ -5,6 +5,8 @@
+       def login(username, password):
+      +    if not password:
+      +        raise ValueError("Password cannot be empty")
+           return validate_credentials(username, password)
+    fail_to_pass:
+      - tests/test_auth.py::TestAuth::test_login_empty_password
+    pass_to_pass:
+      - tests/test_auth.py::TestAuth::test_login_valid
+    metadata:
+      difficulty: easy
+      category: auth
+
+  - instance_id: example-002
+    repo: example/repo
+    base_commit: def456
+    problem_statement: |
+      The sort function crashes on empty lists.
+      It should return an empty list instead of raising an IndexError.
+    hints_text: Look at the sort implementation in utils.py
+    fail_to_pass:
+      - tests/test_utils.py::TestSort::test_empty_list
+    pass_to_pass:
+      - tests/test_utils.py::TestSort::test_normal_sort
+    metadata:
+      difficulty: easy
+      category: utils

@@ -1,0 +1,24 @@
+dataset:
+  name: swebench-lite
+  split: test
+  limit: null
+
+agent:
+  name: claude-code
+  timeout: 600
+  env: {}
+  options: {}
+
+docker:
+  base_image: codingeval-base:latest
+  dockerfile: docker/base/Dockerfile
+  memory_limit: 4g
+  cpu_count: 2
+  network_enabled: true
+  cleanup: true
+
+evaluator: swebench
+reporter: console
+results_dir: results
+max_workers: 1
+log_level: INFO

@@ -1,0 +1,6 @@
+agent:
+  name: aider
+  timeout: 600
+  options:
+    model: ""
+  env: {}
