@@ -1,0 +1,12 @@
+dataset:
+  name: regression
+agent:
+  name: claude-code
+  timeout: 60
+  options:
+    max_turns: 10
+docker:
+  enabled: false
+evaluator: regression
+reporter: console
+max_workers: 1

@@ -53,7 +53,11 @@ class HostWorkspace:
         self._install_environment()
 
     def _clone_repo(self) -> None:
-        repo_url = f"https://github.com/{self.instance.repo}.git"
+        bundle_path = self.instance.metadata.get("repo_bundle_path")
+        if bundle_path:
+            repo_url = bundle_path
+        else:
+            repo_url = f"https://github.com/{self.instance.repo}.git"
         logger.info("Cloning %s to %s", repo_url, self._host_workdir)
 
         subprocess.run(

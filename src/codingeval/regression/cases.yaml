@@ -1,0 +1,230 @@
+dataset_name: regression
+
+instances:
+  # ── 1. Basic edit: fix divide-by-zero ──────────────────────
+  - instance_id: regression-001-fix-single-function
+    repo: regression/fix-single-function
+    base_commit: ""
+    problem_statement: |
+      The `divide` function in `calculator.py` crashes with a ZeroDivisionError
+      when the divisor is zero. Fix it to raise a `ValueError` with the message
+      "Cannot divide by zero" instead.
+    fail_to_pass:
+      - test_calculator.py::test_divide_by_zero
+    pass_to_pass:
+      - test_calculator.py::test_add
+      - test_calculator.py::test_subtract
+      - test_calculator.py::test_multiply
+      - test_calculator.py::test_divide
+    metadata:
+      bundle: fix-single-function.bundle
+      dimension: basic-edit
+      expected_files: [calculator.py]
+
+  # ── 2. Exception handling: invalid JSON ────────────────────
+  - instance_id: regression-002-add-error-handling
+    repo: regression/add-error-handling
+    base_commit: ""
+    problem_statement: |
+      The `read_json_with_default` function in `file_reader.py` should return
+      the `default` value when the file contains invalid JSON. Currently it
+      lets the `json.JSONDecodeError` propagate. Add a try/except so it
+      catches the decode error and returns `default`.
+    fail_to_pass:
+      - test_file_reader.py::test_read_json_with_default_invalid
+      - test_file_reader.py::test_read_json_with_default_invalid_no_default
+    pass_to_pass:
+      - test_file_reader.py::test_read_valid_json
+      - test_file_reader.py::test_read_json_with_default_valid
+    metadata:
+      bundle: add-error-handling.bundle
+      dimension: error-handling
+      expected_files: [file_reader.py]
+
+  # ── 3. Cross-file change: add validator ────────────────────
+  - instance_id: regression-003-multi-file-import
+    repo: regression/multi-file-import
+    base_commit: ""
+    problem_statement: |
+      The test file imports `validate_email` from `validators.py`, but that
+      function doesn't exist yet. Add a `validate_email(email)` function to
+      `validators.py` that:
+      - Returns the email stripped of whitespace if it contains '@'
+      - Raises `ValueError("Email must contain @")` otherwise
+    fail_to_pass:
+      - test_app.py::test_validate_email_valid
+      - test_app.py::test_validate_email_no_at
+      - test_app.py::test_validate_email_empty
+      - test_app.py::test_user_with_validation
+    pass_to_pass:
+      - test_app.py::test_valid_user
+      - test_app.py::test_validate_name
+      - test_app.py::test_validate_name_empty
+    metadata:
+      bundle: multi-file-import.bundle
+      dimension: cross-file
+      expected_files: [validators.py]
+
+  # ── 4. Logic debugging: off-by-one in pagination ───────────
+  - instance_id: regression-004-fix-off-by-one
+    repo: regression/fix-off-by-one
+    base_commit: ""
+    problem_statement: |
+      The `paginate` function in `pagination.py` has an off-by-one error.
+      Page 1 should return the first `per_page` items, but currently it
+      skips them and returns the second page's items instead. Fix the
+      start index calculation.
+    fail_to_pass:
+      - test_pagination.py::test_first_page
+      - test_pagination.py::test_second_page
+      - test_pagination.py::test_last_page
+    pass_to_pass:
+      - test_pagination.py::test_total_pages
+      - test_pagination.py::test_single_page
+      - test_pagination.py::test_invalid_page
+    metadata:
+      bundle: fix-off-by-one.bundle
+      dimension: logic-debugging
+      expected_files: [pagination.py]
+
+  # ── 5. Find & fix pattern: use config instead of hardcoded URLs ─
+  - instance_id: regression-005-search-and-replace
+    repo: regression/search-and-replace
+    base_commit: ""
+    problem_statement: |
+      The functions `get_api_url()`, `get_cdn_url()`, and `get_auth_url()`
+      in `config.py` return hardcoded URL strings instead of reading from
+      `Config.API_URL`, `Config.CDN_URL`, and `Config.AUTH_URL`. Fix all
+      three functions to return the value from the Config class.
+    fail_to_pass:
+      - test_config.py::test_api_url_uses_config
+      - test_config.py::test_cdn_url_uses_config
+      - test_config.py::test_auth_url_uses_config
+    pass_to_pass:
+      - test_config.py::test_default_values
+    metadata:
+      bundle: search-and-replace.bundle
+      dimension: search-replace
+      expected_files: [config.py]
+
+  # ── 6. Diagnose from error: fix KeyError ───────────────────
+  - instance_id: regression-006-debug-stack-trace
+    repo: regression/debug-stack-trace
+    base_commit: ""
+    problem_statement: |
+      The `process_record` function in `processor.py` crashes with a KeyError
+      when a record is missing the 'metadata' key or when metadata lacks a
+      'tag' key. Also crashes with ZeroDivisionError on empty scores.
+
+      Fix it so:
+      - Missing metadata or missing tag → tag is None
+      - Empty scores list → average is 0.0
+    fail_to_pass:
+      - test_processor.py::test_missing_metadata
+      - test_processor.py::test_missing_tag_in_metadata
+      - test_processor.py::test_empty_scores
+    pass_to_pass:
+      - test_processor.py::test_full_record
+    metadata:
+      bundle: debug-stack-trace.bundle
+      dimension: diagnose-error
+      expected_files: [processor.py]
+
+  # ── 7. Feature implementation: add min() to Stack ──────────
+  - instance_id: regression-007-add-new-method
+    repo: regression/add-new-method
+    base_commit: ""
+    problem_statement: |
+      Add a `min()` method to the `Stack` class in `stack.py` that returns
+      the minimum value currently in the stack in O(1) time. It should raise
+      `IndexError("Min of empty stack")` if the stack is empty. You will
+      need to track minimums as items are pushed and popped.
+    fail_to_pass:
+      - test_stack.py::test_min_single
+      - test_stack.py::test_min_multiple
+      - test_stack.py::test_min_after_pop
+      - test_stack.py::test_min_empty
+    pass_to_pass:
+      - test_stack.py::test_push_pop
+      - test_stack.py::test_peek
+      - test_stack.py::test_is_empty
+      - test_stack.py::test_pop_empty
+    metadata:
+      bundle: add-new-method.bundle
+      dimension: feature-implementation
+      expected_files: [stack.py]
+
+  # ── 8. Fix without breaking: whitespace normalization ──────
+  - instance_id: regression-008-fix-test-regression
+    repo: regression/fix-test-regression
+    base_commit: ""
+    problem_statement: |
+      The `normalize_whitespace` function in `string_utils.py` is supposed
+      to collapse runs of whitespace into a single space. But the current
+      implementation using `split()` and `"".join()` removes ALL spaces,
+      merging words together. Fix it so that words are joined with a single
+      space while still collapsing multiple whitespace characters.
+    fail_to_pass:
+      - test_string_utils.py::test_collapse_multiple_spaces
+      - test_string_utils.py::test_collapse_tabs
+      - test_string_utils.py::test_mixed_whitespace
+      - test_string_utils.py::test_preserves_single_spaces
+    pass_to_pass:
+      - test_string_utils.py::test_single_word
+      - test_string_utils.py::test_empty_string
+    metadata:
+      bundle: fix-test-regression.bundle
+      dimension: fix-without-breaking
+      expected_files: [string_utils.py]
+
+  # ── 9. Refactoring: extract duplicated validation ──────────
+  - instance_id: regression-009-refactor-extract
+    repo: regression/refactor-extract
+    base_commit: ""
+    problem_statement: |
+      Both `generate_sales_report` and `generate_expense_report` in
+      `report.py` contain duplicated validation logic for amounts. Extract
+      this into a `validate_amount(amount)` function that:
+      - Raises `TypeError` if amount is not int/float
+      - Raises `ValueError` if amount is negative
+      - Returns the amount if valid
+
+      Then use `validate_amount` in both report functions. The tests import
+      `validate_amount` from `report`.
+    fail_to_pass:
+      - test_report.py::test_validate_amount_valid
+      - test_report.py::test_validate_amount_negative
+      - test_report.py::test_validate_amount_non_numeric
+    pass_to_pass:
+      - test_report.py::test_sales_report
+      - test_report.py::test_expense_report
+      - test_report.py::test_combined_report
+      - test_report.py::test_sales_invalid_amount
+      - test_report.py::test_expense_negative_amount
+    metadata:
+      bundle: refactor-extract.bundle
+      dimension: refactoring
+      expected_files: [report.py]
+
+  # ── 10. Non-Python edit: fix config.yaml values ────────────
+  - instance_id: regression-010-fix-yaml-config
+    repo: regression/fix-yaml-config
+    base_commit: ""
+    problem_statement: |
+      The `config.yaml` file has development settings that should be
+      production-safe defaults:
+      - `app.debug` should be `false` (currently `true`)
+      - `app.log_level` should be `"WARNING"` (currently `"DEBUG"`)
+
+      Fix the values in `config.yaml`. Do NOT change any Python code.
+    fail_to_pass:
+      - test_app.py::test_load_default_config
+    pass_to_pass:
+      - test_app.py::test_database_url
+      - test_app.py::test_debug_mode
+      - test_app.py::test_log_level_from_file
+      - test_app.py::test_features_present
+    metadata:
+      bundle: fix-yaml-config.bundle
+      dimension: non-python-edit
+      expected_files: [config.yaml]
